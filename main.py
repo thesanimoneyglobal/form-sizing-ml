@@ -3,7 +3,6 @@ from pydantic import BaseModel
 from typing import Literal
 import numpy as np
 import pickle
-from fastapi import HTTPException
 
 app = FastAPI()
 
@@ -20,7 +19,6 @@ class EstimationItem(BaseModel):
 
 
 model_path = 'models'
-
 
 with open(f'{model_path}/model_Form Complexity 1.pkl', 'rb') as f:
     model_Form_Complexity_1 = pickle.load(f)
@@ -56,26 +54,23 @@ async def root():
 
 @app.post("/")
 async def predicting_endpoint(item: EstimationItem):
-    try:
-        x = preprocess_input(item)
+    x = preprocess_input(item)
 
-        # Predict probabilities
-        predict_form_complexity_1 = model_Form_Complexity_1.predict_proba(x)[:, 1]
-        predict_form_complexity_2 = model_Form_Complexity_2.predict_proba(x)[:, 1]
-        predict_form_complexity_3 = model_Form_Complexity_3.predict_proba(x)[:, 1]
-        predict_form_complexity_4 = model_Form_Complexity_4.predict_proba(x)[:, 1]
+    # Predict probabilities
+    predict_form_complexity_1 = model_Form_Complexity_1.predict_proba(x)[:, 1]
+    predict_form_complexity_2 = model_Form_Complexity_2.predict_proba(x)[:, 1]
+    predict_form_complexity_3 = model_Form_Complexity_3.predict_proba(x)[:, 1]
+    predict_form_complexity_4 = model_Form_Complexity_4.predict_proba(x)[:, 1]
 
-        # Return predictions as a JSON response
-        labels = ["S", "M", "L", "XL"]
-        # Probabilities for each form complexity
-        data = [
-            predict_form_complexity_1[0],
-            predict_form_complexity_2[0],
-            predict_form_complexity_3[0],
-            predict_form_complexity_4[0]
-        ]
+    # Return predictions as a JSON response
+    labels = ["S", "M", "L", "XL"]
+    # Probabilities for each form complexity
+    data = [
+        predict_form_complexity_1[0],
+        predict_form_complexity_2[0],
+        predict_form_complexity_3[0],
+        predict_form_complexity_4[0]
+    ]
 
-        # Return predictions as a JSON response
-        return dict(zip(labels, data))
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    # Return predictions as a JSON response
+    return dict(zip(labels, data))
