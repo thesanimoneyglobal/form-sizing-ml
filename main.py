@@ -49,6 +49,11 @@ def preprocess_input(data: EstimationItem) -> np.ndarray:
     return np.array(x).reshape(1, -1)
 
 
+@app.get("/")
+async def root():
+    return {"Hello": "World"}
+
+
 @app.post("/")
 async def predicting_endpoint(item: EstimationItem):
     try:
